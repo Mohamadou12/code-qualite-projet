@@ -1,0 +1,38 @@
+name: CI - Qualité du Code
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  qualite:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Installer Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Créer et activer venv
+        run: |
+          python -m venv venv
+          echo "venv\Scripts" >> $GITHUB_PATH
+
+      - name: Installer les dépendances
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Vérifier Black
+        run: black --check .
+
+      - name: Vérifier Flake8
+        run: flake8
+
+      - name: Vérifier MyPy
+        run: mypy .
